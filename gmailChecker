@@ -1,0 +1,17 @@
+__author__ = 'jbg'
+from xml.dom.minidom import parse
+import urllib
+
+user = ""
+password = ""
+url = 'https://' + user + ':' + password + '@mail.google.com/mail/feed/atom'
+
+resp = urllib.urlopen(url)
+xml = parse(resp)
+count = xml.getElementsByTagName('fullcount')[0].firstChild.data
+if count == '0':
+    print('No new messages')
+elif count == '1':
+    print('1 new message')
+elif count > 1:
+    print(count + ' new messages')
