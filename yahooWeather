@@ -1,0 +1,42 @@
+__author__ = 'jbg'
+import sys
+from xml.dom.minidom import parse
+import urllib
+
+
+def get_Weather():
+    base_url = 'http://xml.weather.yahoo.com/forecastrss?p='
+    location = '94117'
+    url = base_url + location
+    resp = urllib.urlopen(url)
+    dom = parse(resp)
+
+    city = dom.getElementsByTagName('yweather:location')[0].getAttribute('city')
+
+    current = [dom.getElementsByTagName('yweather:condition')[0].getAttribute('text'),
+               dom.getElementsByTagName('yweather:condition')[0].getAttribute('temp')]
+
+    # create 5-day forecast dictionary #
+    forecast = {}
+    for i, attrib in enumerate(dom.getElementsByTagName('yweather:forecast')):
+        forecast[i] = {'day': attrib.getAttribute('day'),
+                       'date': attrib.getAttribute('date'),
+                       'low': attrib.getAttribute('low'),
+                       'high': attrib.getAttribute('high'),
+                       'condition': attrib.getAttribute('text')}
+    return city, current, forecast
+
+def main():
+    data = get_Weather()
+    city = data[0]
+    current = data[1]
+    forecast = data[2]
+    # f = open('test.html', 'r+')
+    # f.write(city)
+    # f.close()
+    print('\n'+ current[1] + ' and ' + current[0])
+    print('Forecast: ')
+    for i in forecast:
+        print(forecast[i]['day'] + ' ' + forecast[i]['date'] + ': '+forecast[i]['high'] +'/'+forecast[i]['low'] + ' '+forecast[i]['condition'])
+
+main()
